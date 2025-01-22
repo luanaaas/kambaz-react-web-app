@@ -2,6 +2,10 @@ export default function Lab1() {
     return (
         <div>
             <h2>Lab 1</h2>
+            <p>
+                Luana Siyoum <br />
+                Section: 02
+            </p>
             <h3>HTML Examples</h3>
             <div id="wd-h-tag">
                 <h4>Heading Tags</h4>
@@ -56,8 +60,8 @@ export default function Lab1() {
                     <li>Flip and cook the other side.</li>
                     <li>Serve and enjoy!</li>
                 </ol>
+                How to make hummus:
                 <ol id="wd-your-favorite-recipe">
-                How to make hummus
                     <li>Drain and rinse a can of chickpeas.</li>
                     <li>Blend chickpeas, garlic, tahini, lemon juice, and olive oil.</li>
                     <li>Blend in a couple of ice cubes along the way, and water as needed.</li>
