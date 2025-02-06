@@ -3,7 +3,6 @@ export default function Lab1() {
         <div>
             <h2>Lab 1</h2>
             <p>
-                Luana Siyoum <br />
                 Section: 02
             </p>
             <h3>HTML Examples</h3>
