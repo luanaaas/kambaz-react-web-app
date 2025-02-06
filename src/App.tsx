@@ -1,6 +1,7 @@
 import Kambaz from "./Kambaz";
 import Labs from "./Labs";
 import { HashRouter, Navigate, Route, Routes } from "react-router";
+// import "./App.css";
 function App() {
   return (
     <HashRouter>
