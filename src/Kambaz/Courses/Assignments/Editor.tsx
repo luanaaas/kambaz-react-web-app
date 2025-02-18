@@ -1,26 +1,20 @@
 import { Form, Button, Row, Col } from 'react-bootstrap';
+import { useParams } from 'react-router';
+import db from "../../Database";
 
 
 export default function AssignmentEditor() {
+    const {aid} = useParams();
+    const assignment = db.assignments.find((assignment) => assignment._id === aid);
     return (
       <div id="wd-assignments-editor">
 
         <Form>
           
           <Form.Group controlId="wd-name">
-            <Form.Label>Assignment Name</Form.Label>
-            <Form.Control type="text" id="wd-name" defaultValue="A1" />
+            <Form.Control type="text" id="wd-name" value={assignment?.title} />
             <br />
-            <Form.Control id="wd-description" as="textarea" rows={11} defaultValue="The assignment is available online
-Submit a link to the landing page of your Web application running on Netlify:
-The landing page should include the following:
-
-  •  Your full name and section
-  •  Links to each of the lab assignments
-  •  Link to the Kanbas application
-  •  Links to all relevant source code repositories
-
-The Kanbas application should include a link to navigate back to the landing page." />
+            <Form.Control id="wd-description" as="textarea" value={assignment?.description} />
           </Form.Group>
 
   
@@ -31,7 +25,7 @@ The Kanbas application should include a link to navigate back to the landing pag
                 <Form.Label>Points</Form.Label>
               </Col>
               <Col sm={6} className="text-end">
-                <Form.Control type="number" id="wd-points" defaultValue={100} />
+                <Form.Control type="number" id="wd-points" value={assignment?.points} />
               </Col>
             </Row>
           </Form.Group>

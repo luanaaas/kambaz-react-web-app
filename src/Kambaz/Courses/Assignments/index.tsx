@@ -4,9 +4,13 @@ import AssignControlButtons from "./AssignControlButtons";
 import AControlButtons from "./AControlButtons";
 import { BsGripVertical } from "react-icons/bs";
 import { RiFileEditLine } from "react-icons/ri";
+import { Link, useParams } from "react-router";
+import db from "../../Database";
 
 
 export default function Assignments() {
+    const {cid} = useParams();
+    const assignments = db.assignments.filter((assignment) => assignment.course === cid);
     return (
 
       <div>
@@ -19,9 +23,10 @@ export default function Assignments() {
              </div>
 
 
-            <ListGroup className="wd-lessons rounded-0">
+            <ListGroup className="wd-assignment-list rounded-0">
                 
-              <ListGroup.Item className="wd-assignment p-3 ps-1 d-flex align-items-center justify-content-between">
+            {assignments.map((assignment: any) => (<ListGroup.Item as={Link} to={`/Kambaz/Courses/${cid}/Assignments/${assignment._id}`}
+                  className="wd-assignment-list-item p-3 ps-1 d-flex align-items-center justify-content-between">
                 {/* Left Side: Icons + Assignment Info */}
                 <div className="d-flex align-items-center ">
                   <BsGripVertical className="me-2 fs-3" />
@@ -29,9 +34,9 @@ export default function Assignments() {
 
                   {/* Assignment Title + Details in Column */}
                   <div className="d-flex flex-column ms-2">
-                    <a href="#/Kambaz/Courses/1234/Assignments/123" className="wd-assignment-link">
-                      A1
-                    </a>
+                    <h3>{assignment.title}</h3>
+                    <p>{assignment.description}</p>
+                   
                     <span className="assignment-details">
                       Multiple Modules | <b>Not available until</b> May 6 at 12:00am
                     </span>
@@ -44,61 +49,7 @@ export default function Assignments() {
 
                   <AControlButtons />
 
-              </ListGroup.Item>
-
-
-              <ListGroup.Item className="wd-assignment p-3 ps-1 d-flex align-items-center justify-content-between">
-                {/* Left Side: Icons + Assignment Info */}
-                <div className="d-flex align-items-center">
-                  <BsGripVertical className="me-2 fs-3" />
-                  <RiFileEditLine className="me-2 fs-3 green-file" />
-
-                  {/* Assignment Title + Details in Column */}
-                  <div className="d-flex flex-column ms-2">
-                    <a href="#/Kambaz/Courses/1234/Assignments/123" className="wd-assignment-link">
-                      A2
-                    </a>
-                    <span className="assignment-details">
-                      Multiple Modules | <b>Not available until</b> May 6 at 12:00am
-                    </span>
-                    <span className="assignment-due">
-                      <b>Due</b> May 13 at 11:59pm | 100 pts
-                    </span>
-                  </div>
-
-                </div>
-
-                  <AControlButtons />
-
-              </ListGroup.Item>
-
-
-
-
-              <ListGroup.Item className="wd-assignment p-3 ps-1 d-flex align-items-center justify-content-between">
-                {/* Left Side: Icons + Assignment Info */}
-                <div className="d-flex align-items-center ">
-                  <BsGripVertical className="me-2 fs-3" />
-                  <RiFileEditLine className="me-2 fs-3 green-file" />
-
-                  {/* Assignment Title + Details in Column */}
-                  <div className="d-flex flex-column ms-2">
-                    <a href="#/Kambaz/Courses/1234/Assignments/123" className="wd-assignment-link">
-                      A3
-                    </a>
-                    <span className="assignment-details">
-                      Multiple Modules | <b>Not available until</b> May 6 at 12:00am
-                    </span>
-                    <span className="assignment-due">
-                      <b>Due</b> May 13 at 11:59pm | 100 pts
-                    </span>
-                  </div>
-
-                </div>
-
-                  <AControlButtons />
-
-              </ListGroup.Item>
+              </ListGroup.Item>))}
 
 
             </ListGroup>
