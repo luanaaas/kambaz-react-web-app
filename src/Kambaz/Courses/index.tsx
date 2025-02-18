@@ -1,4 +1,4 @@
-import { Navigate, Route, Routes } from "react-router";
+import { Navigate, Route, Routes, useParams, useLocation } from "react-router";
 import Home from "./Home";
 import Modules from "./Modules";
 import CoursesNavigation from "./Navigation";
@@ -6,14 +6,18 @@ import Assignments from "./Assignments";
 import AssignmentEditor from "./Assignments/Editor";
 import { GiHamburgerMenu } from "react-icons/gi";
 import People from "./People";
+import db from "../Database"
 
 export default function Courses() {
+    const {cid} = useParams();
+    const course = db.courses.find((course) => course._id === cid);
+    const { pathname } = useLocation();
     return (
         <div id="wd-courses">
 
             <div className="d-flex align-items-center">
                 <GiHamburgerMenu className="me-2 d-none d-lg-block fs-2 text-danger" /> 
-                <h2 className="text-danger mb-0 flex-grow-1">Courses</h2>
+                <h2 className="text-danger mb-0 flex-grow-1">{course?.name} &gt; {pathname.split("/")[4]}</h2>
             </div>
             
             <hr />
