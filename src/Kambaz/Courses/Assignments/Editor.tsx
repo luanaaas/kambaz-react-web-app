@@ -1,20 +1,88 @@
 import { Form, Button, Row, Col } from 'react-bootstrap';
-import { useParams } from 'react-router';
-import db from "../../Database";
+import { useNavigate, useParams } from 'react-router';
+import { useState, useEffect } from 'react';
+import { addAssignment, updateAssignment } from './reducer';
+import { useDispatch, useSelector } from 'react-redux';
 
 
 export default function AssignmentEditor() {
-    const {aid} = useParams();
-    const assignment = db.assignments.find((assignment) => assignment._id === aid);
-    return (
-      <div id="wd-assignments-editor">
+    const {aid, cid} = useParams();
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
+    
+    const { assignments } = useSelector((state: any) => state.assignmentsReducer);
+    const assignment = assignments.find((assignment: any) => assignment._id === aid);
+    
+    const[title, setTitle] = useState("");
+    const[availableFrom, setAvailableFrom] = useState("");
+    const[availableUntil, setAvailableUntil] = useState( "");
+    const[dueDate, setDueDate] = useState("");
+    const[points, setPoints] = useState("");
+    const[description, setDescription] = useState("");
 
-        <Form>
+    useEffect(() => {
+      if (assignment) {
+          setTitle(assignment.title);
+          setAvailableFrom(assignment.availableFrom);
+          setAvailableUntil(assignment.availableUntil);
+          setDueDate(assignment.dueDate);
+          setPoints(assignment.points);
+          setDescription(assignment.description);
+      }}, [assignment]);
+    
+      const addOrEditAssignment = () => {
+      if (aid === "new"){
+        const newAssignment = {
+          _id: new Date().getTime().toString(), 
+          title,
+          course: cid,
+          availableFrom,
+          availableUntil,
+          dueDate,
+          points,
+          description,
+        };
+        dispatch(addAssignment(newAssignment))
+      } else {
+        const editedAssignment = {
+          _id: aid, 
+          title,
+          course: cid,
+          availableFrom,
+          availableUntil,
+          dueDate,
+          points,
+          description,
+        };
+        dispatch(updateAssignment(editedAssignment))
+      }
+      navigate(`/Kambaz/Courses/${cid}/Assignments`);
+    };
+    
+    const handleCancel = () => {
+      if (assignments) {
+          setTitle(assignments.title);
+          setAvailableFrom(assignments.availableFrom);
+          setAvailableUntil(assignments.availableUntil);
+          setDueDate(assignments.dueDate);
+          setPoints(assignments.points);
+          setDescription(assignments.description);
+      }
+      navigate(`/Kambaz/Courses/${cid}/Assignments`);
+  };
+
+  
+
+
+    return (
+      <div id="wd-assignments-editor" >
+
+        <Form >
           
           <Form.Group controlId="wd-name">
-            <Form.Control type="text" id="wd-name" value={assignment?.title} />
+            <Form.Control type="text" id="wd-name" placeholder={assignment?.title} value={title} onChange={(e) => setTitle(e.target.value)}/>
             <br />
-            <Form.Control id="wd-description" as="textarea" value={assignment?.description} />
+            <Form.Control id="wd-description" as="textarea" placeholder={assignment?.description} value={description} onChange={(e) => setDescription(e.target.value)} />
           </Form.Group>
 
   
@@ -25,7 +93,7 @@ export default function AssignmentEditor() {
                 <Form.Label>Points</Form.Label>
               </Col>
               <Col sm={6} className="text-end">
-                <Form.Control type="number" id="wd-points" value={assignment?.points} />
+                <Form.Control type="number" id="wd-points" placeholder={assignment?.points} value={points} onChange={(e) => setPoints(e.target.value)} />
               </Col>
             </Row>
           </Form.Group>
@@ -36,7 +104,7 @@ export default function AssignmentEditor() {
               <Form.Label>Assignment Group</Form.Label>
             </Col>
             <Col sm={6} className="text-end">
-              <Form.Control as="select" id="wd-group">
+              <Form.Control as="select" id="wd-group" >
                 <option>ASSIGNMENTS</option>
               </Form.Control>
             </Col>
@@ -102,7 +170,7 @@ export default function AssignmentEditor() {
             <Col sm={6}>
               <Form.Group controlId="wd-due-date">
                 <Form.Label>Due</Form.Label>
-                <Form.Control id="wd-due-date" type="date" defaultValue="2024-05-13" />
+                <Form.Control id="wd-due-date" type="date" placeholder={assignment?.dueDate} value={dueDate} onChange={(e) => setDueDate(e.target.value)} />
               </Form.Group>
             </Col>
           </Row>
@@ -111,13 +179,13 @@ export default function AssignmentEditor() {
             <Col sm={3} >
               <Form.Group controlId="wd-available-from">
                 <Form.Label>Available from</Form.Label>
-                <Form.Control id="wd-available-from" type="date" defaultValue="2024-05-06" />
+                <Form.Control id="wd-available-from" type="date" placeholder={assignment?.availableFrom} value={availableFrom} onChange={(e) => setAvailableFrom(e.target.value)} />
               </Form.Group>
             </Col>
             <Col sm={3}>
               <Form.Group controlId="wd-available-until">
                 <Form.Label>Until</Form.Label>
-                <Form.Control id="wd-available-until" type="date" defaultValue="2024-05-20" />
+                <Form.Control id="wd-available-until" type="date" placeholder={assignment?.availableUntil} value={availableUntil} onChange={(e) => setAvailableUntil(e.target.value)} />
               </Form.Group>
             </Col>
           </Row>
@@ -126,10 +194,11 @@ export default function AssignmentEditor() {
 
         <Row className="justify-content-end">
           <Col sm={2} className="text-end">
-            <Button variant="secondary" type="button">Cancel</Button>
+            {/* <Button onClick={() => navigate(`/Kambaz/Courses/${cid}/Assignments`)} variant="secondary" type="button">Cancel</Button> */}
+            <Button onClick={handleCancel} variant="secondary" type="button">Cancel</Button>
           </Col>
           <Col sm={2} className="text-end">
-            <Button variant="danger" type="button">Save</Button>
+            <Button onClick={addOrEditAssignment} variant="danger" type="button">Save</Button>
           </Col>
         </Row>
     
