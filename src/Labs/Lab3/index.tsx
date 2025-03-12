@@ -32,16 +32,25 @@ import FindIndex from "./FindIndex";
 import TodoItem from "./todos/TodoItem";
 import TodoList from "./todos/TodoList";
 import AddPathParameters from "./AddPathParameters";
-
+import { useSelector } from "react-redux";
 
 
 
 export default function Lab3() {
+    const { todos } = useSelector((state: any) => state.todosReducer);
     console.log('Hello World!');
 
     return (
         <div id="wd-lab3" className="container">
             <h2>Lab 3</h2>
+            <ul className="list-group">
+                {todos.map((todo: any) => (
+                <li className="list-group-item" key={todo.id}>
+                    {todo.title}
+                </li>
+                ))}
+            </ul>
+            <hr />
             <h3>JavaScript</h3>
 
             

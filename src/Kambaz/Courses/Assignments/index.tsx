@@ -5,12 +5,18 @@ import AControlButtons from "./AControlButtons";
 import { BsGripVertical } from "react-icons/bs";
 import { RiFileEditLine } from "react-icons/ri";
 import { Link, useParams } from "react-router";
-import db from "../../Database";
+import { useDispatch, useSelector } from "react-redux";
+import { deleteAssignment } from "./reducer";
 
 
 export default function Assignments() {
-    const {cid} = useParams();
-    const assignments = db.assignments.filter((assignment) => assignment.course === cid);
+    const {cid, aid} = useParams();
+    const { assignments } = useSelector((state: any) => state.assignmentsReducer);
+    const dispatch = useDispatch();
+    const assignment = assignments.find((assignment: any) => assignment._id === aid);
+
+  
+
     return (
 
       <div>
@@ -25,29 +31,35 @@ export default function Assignments() {
 
             <ListGroup className="wd-assignment-list rounded-0">
                 
-            {assignments.map((assignment: any) => (<ListGroup.Item as={Link} to={`/Kambaz/Courses/${cid}/Assignments/${assignment._id}`}
-                  className="wd-assignment-list-item p-3 ps-1 d-flex align-items-center justify-content-between">
-                {/* Left Side: Icons + Assignment Info */}
+            {assignments.filter((assignment: any) => assignment.course === cid)
+            .map((assignment: any) => (<ListGroup.Item as={Link} to={`/Kambaz/Courses/${cid}/Assignments/${assignment._id}`}
+                  className="wd-assignment-list-item p-3 ps-1 d-flex align-items-center justify-content-between" >
+                
                 <div className="d-flex align-items-center ">
                   <BsGripVertical className="me-2 fs-3" />
                   <RiFileEditLine className="me-2 fs-3 green-file" />
 
-                  {/* Assignment Title + Details in Column */}
+                  
                   <div className="d-flex flex-column ms-2">
                     <h3>{assignment.title}</h3>
                     <p>{assignment.description}</p>
                    
                     <span className="assignment-details">
-                      Multiple Modules | <b>Not available until</b> May 6 at 12:00am
+                      Multiple Modules | <b>Available from</b> {assignment.availableFrom} | <b>Available until</b> {assignment.availableUntil}
                     </span>
                     <span className="assignment-due">
-                      <b>Due</b> May 13 at 11:59pm | 100 pts
+                      <b>Due</b> {assignment.dueDate} | {assignment.points} pts
                     </span>
                   </div>
 
                 </div>
 
-                  <AControlButtons />
+                  <AControlButtons
+                  assignmentId={assignment._id}
+                  deleteAssignment={(assignmentId) => {
+                    dispatch(deleteAssignment(assignmentId));
+                  }}/>
+
 
               </ListGroup.Item>))}
 
@@ -64,46 +76,7 @@ export default function Assignments() {
 );}
 
 
-{/* <input placeholder="Search for Assignments"
-id="wd-search-assignment" />
-<button id="wd-add-assignment-group">+ Group</button>
-<button id="wd-add-assignment">+ Assignment</button>
-<h3 id="wd-assignments-title">
-ASSIGNMENTS 40% of Total <button>+</button>
-</h3>
-<ul id="wd-assignment-list">
-<li className="wd-assignment-list-item">
-<a href="#/Kambaz/Courses/1234/Assignments/123"
-className="wd-assignment-link" >
-A1 - ENV + HTML
-</a>
-<br />
-Multiple Modules | <b>Not avaiable until</b> May 6 at 12:00am |
-<br />
-<b>Due</b> May 13 at 11:59pm | 100 pts
-</li>
 
-<li className="wd-assignment-list-item">
-<a href="#/Kambaz/Courses/1234/Assignments/123"
-className="wd-assignment-link" >
-A2 - CSS + BOOSTRAP
-</a>
-<br />
-Multiple Modules | <b>Not avaiable until</b> May 13 at 12:00am |
-<br />
-<b>Due</b>  May 20 at 11:59pm | 100 pts
-</li>
-<li className="wd-assignment-list-item">
-<a href="#/Kambaz/Courses/1234/Assignments/123"
-className="wd-assignment-link" >
-A3 - JAVASCRIPT + REACT
-</a>
-<br />
-Multiple Modules | <b>Not avaiable until</b> May 20 at 12:00am |
-<br />
-<b>Due</b>  May 27 at 11:59pm | 100 pts
-</li>
-</ul> */}
   
   
   
