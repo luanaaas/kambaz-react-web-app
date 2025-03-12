@@ -10,11 +10,9 @@ import { deleteAssignment } from "./reducer";
 
 
 export default function Assignments() {
-    const {cid, aid} = useParams();
+    const {cid} = useParams();
     const { assignments } = useSelector((state: any) => state.assignmentsReducer);
     const dispatch = useDispatch();
-    const assignment = assignments.find((assignment: any) => assignment._id === aid);
-
   
 
     return (

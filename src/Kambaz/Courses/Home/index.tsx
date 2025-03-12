@@ -20,18 +20,4 @@ export default function Home() {
 }
 
 
-// export default function Home() {
-//     return (
-//         <div id= "wd-home">
-//             <Row>
-//                 <Col lg={8} md={9}>
-//                     <Modules />
-//                 </Col>
-//                 <Col lg={4} md={3} className="d-none d-md-block">
-//                         <CourseStatus />
-//                 </Col>
-//             </Row>
-//         </div>
-//     );
-// }
 
