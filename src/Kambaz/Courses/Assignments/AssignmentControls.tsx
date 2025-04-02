@@ -8,9 +8,7 @@ import { useNavigate, useParams } from "react-router";
 export default function AssignmentControls() {
     
    const{cid} = useParams();
-
    const navigate = useNavigate();
-   
    const { currentUser } = useSelector((state: any) => state.accountReducer);
    
  

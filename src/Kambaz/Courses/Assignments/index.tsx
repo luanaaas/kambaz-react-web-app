@@ -6,13 +6,43 @@ import { BsGripVertical } from "react-icons/bs";
 import { RiFileEditLine } from "react-icons/ri";
 import { Link, useParams } from "react-router";
 import { useDispatch, useSelector } from "react-redux";
-import { deleteAssignment } from "./reducer";
-
+import { deleteAssignment, setAssignments } from "./reducer";
+import { useEffect } from "react";
+import * as coursesClient from "../client";
+import * as assignmentClient from "./client";
 
 export default function Assignments() {
     const {cid} = useParams();
     const { assignments } = useSelector((state: any) => state.assignmentsReducer);
     const dispatch = useDispatch();
+    
+    const fetchAssignments = async () => {
+      const assignments = await coursesClient.retrieveAssignment(cid as string);
+      dispatch(setAssignments(assignments));
+    };
+    useEffect(() => {
+      fetchAssignments();
+    }, []);
+
+
+    const removeAssignment = async (assignmentId: string) => {
+          await assignmentClient.deleteAssignment(assignmentId);
+          dispatch(deleteAssignment(assignmentId));
+    };
+
+    const formatDate = (dateString: string) => {
+      const date = new Date(dateString);
+      const options: Intl.DateTimeFormatOptions = {
+        year: "numeric",
+        month: "long",
+        day: "2-digit",
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: true,
+      };
+      return date.toLocaleString("en-US", options);
+    };
+  
   
 
     return (
@@ -29,8 +59,9 @@ export default function Assignments() {
 
             <ListGroup className="wd-assignment-list rounded-0">
                 
-            {assignments.filter((assignment: any) => assignment.course === cid)
-            .map((assignment: any) => (<ListGroup.Item as={Link} to={`/Kambaz/Courses/${cid}/Assignments/${assignment._id}`}
+            {assignments.map((assignment: any) => (
+
+            <ListGroup.Item as={Link} to={`/Kambaz/Courses/${cid}/Assignments/${assignment._id}`}
                   className="wd-assignment-list-item p-3 ps-1 d-flex align-items-center justify-content-between" >
                 
                 <div className="d-flex align-items-center ">
@@ -43,10 +74,11 @@ export default function Assignments() {
                     <p>{assignment.description}</p>
                    
                     <span className="assignment-details">
-                      Multiple Modules | <b>Available from</b> {assignment.availableFrom} | <b>Available until</b> {assignment.availableUntil}
+                      Multiple Modules | <b>Available from</b> {formatDate(assignment.availableFrom)} | <b>Available until</b> {formatDate(assignment.availableUntil)}
                     </span>
+                    
                     <span className="assignment-due">
-                      <b>Due</b> {assignment.dueDate} | {assignment.points} pts
+                      <b>Due</b> {formatDate(assignment.dueDate)} | {assignment.points} pts
                     </span>
                   </div>
 
@@ -54,9 +86,8 @@ export default function Assignments() {
 
                   <AControlButtons
                   assignmentId={assignment._id}
-                  deleteAssignment={(assignmentId) => {
-                    dispatch(deleteAssignment(assignmentId));
-                  }}/>
+                  deleteAssignment={removeAssignment}
+                  />
 
 
               </ListGroup.Item>))}
