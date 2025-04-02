@@ -8,7 +8,10 @@ import AssignmentEditor from "./Assignments/Editor";
 import { GiHamburgerMenu } from "react-icons/gi";
 import People from "./People";
 import ProtectedRouteCourses from "./ProtectedCourseRoute";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { useEffect } from "react";
+import { fetchAllCourses } from "./client";
+import { setCoursesReducer } from "./reducer";
 
 export default function Courses() {
   const { cid } = useParams();
@@ -16,6 +19,19 @@ export default function Courses() {
   const { courses } = useSelector((state: any) => state.coursesReducer);
   const course = courses.find((c: any) => c._id === cid);
 
+  const dispatch = useDispatch();
+  const fetchCourses = async () => {
+    try {
+      const courses = await fetchAllCourses();
+      dispatch(setCoursesReducer(courses))
+    } catch (error) {
+      console.error(error);
+    }
+  };
+  useEffect(() => {
+    fetchCourses();
+  }, []);
+  
   return (
     <div id="wd-courses">
         

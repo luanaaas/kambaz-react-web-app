@@ -17,6 +17,7 @@ export default function KambazNavigation() {
     { label: "Labs",      path: "/Labs",             icon: LiaCogSolid },
   ];
 
+
  return (
   <Navbar id="wd-kam-nav" expand="lg" className="bg-transparent">
 

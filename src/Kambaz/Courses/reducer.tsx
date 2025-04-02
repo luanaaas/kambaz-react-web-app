@@ -9,6 +9,10 @@ const coursesSlice = createSlice({
     initialState,
     reducers: {
 
+        setCoursesReducer: (state, action) => {
+            state.courses = action.payload;
+          },
+
         addNewCourse: (state, { payload: { course }}) => {
             state.courses = [...state.courses, course] as any;
         },
@@ -27,6 +31,6 @@ const coursesSlice = createSlice({
     },
 });
 
-export const { addNewCourse, deleteCourse, updateCourse } =
+export const { addNewCourse, deleteCourse, updateCourse, setCoursesReducer } =
     coursesSlice.actions;
 export default coursesSlice.reducer;
