@@ -20,31 +20,13 @@ export default function TOC() {
       <li className="nav-item"><a id="wd-github"
           href="https://github.com/luanaaas/kambaz-react-web-app" target="_blank"
           className="nav-link">My GitHub</a></li>
+      <li className="nav-item"><a id="wd-server-github"
+          href="https://github.com/luanaaas/kambaz-node-server-app" target="_blank"
+          className="nav-link">Server GitHub</a></li>
+      <li className="nav-item"><a id="wd-render"
+          href="https://kambaz-node-server-app-c0qh.onrender.com" target="_blank"
+          className="nav-link">Render</a></li>
     </ul>
 );}
 
-
-// export default function TOC() {
-//  return (
-//    <Nav variant="pills">
-//      <Nav.Item>
-//        <Nav.Link href="#/Labs">Lab 1</Nav.Link>
-//      </Nav.Item>
-//      <Nav.Item>
-//        <Nav.Link href="#/Labs/Lab1">Lab 1</Nav.Link>
-//      </Nav.Item>
-//      <Nav.Item>
-//        <Nav.Link href="#/Labs/Lab2">Lab 2</Nav.Link>
-//      </Nav.Item>
-//      <Nav.Item>
-//        <Nav.Link href="#/Labs/Lab3">Lab 3</Nav.Link>
-//      </Nav.Item>
-//      <Nav.Item>
-//        <Nav.Link href="#/Kambaz">Kambaz</Nav.Link>
-//      </Nav.Item>
-//      <Nav.Item>
-//        <Nav.Link href="https://github.com/luanaaas/kambaz-react-web-app">My GitHub</Nav.Link>
-//      </Nav.Item>
-//    </Nav>
-// );}
 
