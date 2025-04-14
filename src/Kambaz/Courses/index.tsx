@@ -13,6 +13,7 @@ import { useEffect } from "react";
 import { fetchAllCourses } from "./client";
 import { setCoursesReducer } from "./reducer";
 
+
 export default function Courses() {
   const { cid } = useParams();
   const { pathname } = useLocation();
@@ -31,6 +32,22 @@ export default function Courses() {
   useEffect(() => {
     fetchCourses();
   }, []);
+
+  // const [users, setUsers] = useState<any[]>([]);
+
+  // const fetchUsers = async () => {
+  //   try {
+  //     const users = await getUsersForCourse(cid);
+  //     setUsers(users);
+  //   } catch (error) {
+  //     console.error(error);
+  //   }
+  // };
+  // useEffect(() => {
+  //   if (cid) {
+  //     fetchUsers();
+  //   }
+  // }, [cid]); 
   
   return (
     <div id="wd-courses">
@@ -38,7 +55,6 @@ export default function Courses() {
         <div className="d-flex align-items-center">
                  <GiHamburgerMenu className="me-2 d-none d-lg-block fs-2 text-danger" /> 
                  <h2 className="text-danger mb-0 flex-grow-1">{course?.name} &gt; {pathname.split("/")[4]}</h2>
-                 {/* {course && course.name} */}
         </div>
          <hr />
 

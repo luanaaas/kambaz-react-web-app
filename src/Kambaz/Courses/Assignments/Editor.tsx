@@ -48,6 +48,7 @@ export default function AssignmentEditor() {
     }
   }, [aid, assignments]);
 
+  // may need edits
   const handleSave = async () => {
     if (aid !== "new") {
       await assignmentsClient.updateAssignment(assignment);
@@ -239,7 +240,7 @@ export default function AssignmentEditor() {
                 </Form.Group>
 
                 <Form.Group controlId="wd-due-date">
-                <Form.Label hclassName="form-label">
+                <Form.Label className="form-label">
                   <b>Due</b>
                 </Form.Label>
                 <div className="input-group mb-3">

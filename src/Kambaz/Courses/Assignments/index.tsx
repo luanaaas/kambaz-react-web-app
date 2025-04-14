@@ -16,8 +16,9 @@ export default function Assignments() {
     const { assignments } = useSelector((state: any) => state.assignmentsReducer);
     const dispatch = useDispatch();
     
+    // maybe needs edits
     const fetchAssignments = async () => {
-      const assignments = await coursesClient.retrieveAssignment(cid as string);
+      const assignments = await coursesClient.findAssignmentsForCourse(cid as string);
       dispatch(setAssignments(assignments));
     };
     useEffect(() => {
@@ -71,6 +72,7 @@ export default function Assignments() {
                   
                   <div className="d-flex flex-column ms-2">
                     <h3>{assignment.title}</h3>
+                    
                     <p>{assignment.description}</p>
                    
                     <span className="assignment-details">
@@ -86,7 +88,7 @@ export default function Assignments() {
 
                   <AControlButtons
                   assignmentId={assignment._id}
-                  deleteAssignment={removeAssignment}
+                  deleteAssignment = {(assignmentId) => removeAssignment(assignmentId)}
                   />
 
 
