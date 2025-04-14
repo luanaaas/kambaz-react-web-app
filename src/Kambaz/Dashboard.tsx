@@ -9,34 +9,39 @@ import * as courseClient from "./Courses/client";
 import * as userClient from "./Account/client";
 import * as enrollmentsClient from "./enrollmentsClient"
 
-
 export default function Dashboard() {
   const { currentUser } = useSelector((state: any) => state.accountReducer);
   const [courses, setCourses] = useState<any[]>([]);
+  const [allCourses, setAllCourses] = useState([]);
+  const [myCourses, setMyCourses] = useState([]);
+  const dispatch = useDispatch();
 
+  // fetching courses
   const fetchCourses = async () => {
     try {
-      if (showAll) {
-        const courses = await userClient.allCourses();
-        setCourses(courses);
-        dispatch(setCoursesReducer(courses))
-      } else {
-        const courses = await userClient.findMyCourses();
-        setCourses(courses);
-        dispatch(setCoursesReducer(courses))
-      }
+      const allCourses = await courseClient.fetchAllCourses();
+      const myCourses = await userClient.findCoursesForUser(currentUser._id);
 
+      setMyCourses(myCourses)
+
+      const allCoursesEnrolled = allCourses.map((course: any) => {
+        if (myCourses.find((c: any) => c._id === course._id)) {
+          return { ...course, enrolled: true };
+        } else {
+          return course;
+        }
+      });
+      setAllCourses(allCoursesEnrolled)
+
+      const courses = chooseCourses();
+      setCourses(courses)
+      dispatch(setCoursesReducer(courses))
     } catch (error) {
       console.error(error);
     }
   };
-    
-    useEffect(() => {
-      fetchCourses();
-    }, [currentUser])
 
-  const { enrollments } = useSelector((state: any) => state.enrollmentsReducer);
-
+  // fetching enrollments
   const fetchEnrollments = async () => {
     try {
       const enrollments = await enrollmentsClient.retrieveEnrollments();
@@ -50,6 +55,8 @@ export default function Dashboard() {
     fetchEnrollments();
   }, []);
 
+
+  // new courses
   const newCourse = {
     _id: uuidv4(),
     name: "New course",
@@ -64,20 +71,37 @@ export default function Dashboard() {
   const [course, setCourse] = useState(newCourse);
   const [showAll, setShowAll] = useState(false);
 
+  
   useEffect(() => {
     fetchCourses();
-  }, [showAll]);
+  }, [currentUser]);
 
-  const dispatch = useDispatch();
+  // showing all or showing only users courses
+  useEffect(() => {
+    const visible = showAll ? allCourses : myCourses;
+    setCourses(visible);
+    dispatch(setCoursesReducer(visible));
+  }, [showAll, allCourses, myCourses]);
 
+  const chooseCourses = () => {
+    if (showAll) {
+      return allCourses;
+    } else {
+      return myCourses;
+    }
+  }
+
+
+  // course actions
   const addNewCourse = async () => {
-    const newCourse = await userClient.createCourse(course);
+    const newCourse = await courseClient.createCourse(course);
     setCourses([...courses, newCourse]);
   };
 
   const deleteCourse = async (courseId: string) => {
     await courseClient.deleteCourse(courseId);
     setCourses(courses.filter((course) => course._id !== courseId));
+    await fetchEnrollments();
   };
 
   const updateCourse = async () => {
@@ -88,35 +112,37 @@ export default function Dashboard() {
     }));
   };
 
-  const enrollCourse = async (user : any, course : any) => {
+  const enrollInCourse = async (user: any, course: any) => {
     await enrollmentsClient.enroll(user._id, course._id);
-    dispatch(enroll({user, course}))
+    dispatch(enroll({ user, course }))
+    await fetchEnrollments();
+    await fetchCourses();
   };
 
-  const unenrollCourse = async (user : any, course : any) => {
+  const unenrollFromCourse = async (user: any, course: any) => {
     await enrollmentsClient.unenroll(user._id, course._id);
-    dispatch(unenroll({user, course}))
-    fetchCourses();
+    dispatch(unenroll({ user, course }))
+    await fetchEnrollments();
+    await fetchCourses();
   };
 
   return (
     <div id="wd-dashboard">
 
       <h1 id="wd-dashboard-title">Dashboard {currentUser.firstName}
-        {currentUser.role !== "FACULTY" &&
-        <Button className="float-end" onClick={() => setShowAll(!showAll)}>Enrollments</Button>}
+        {currentUser.role !== "ADMIN" && currentUser.role !== "FACULTY" &&
+        <Button className="float-end" onClick={() => setShowAll(!showAll)}>{showAll ? "My Courses" : "All Courses"} </Button>}
       </h1>
 
       <hr />
       {currentUser.role === "FACULTY" && (
         <>
-           <h3>Course Editor</h3>
-        
-            <Button className="float-end mb-2" onClick={() => {
+          <h3> Course Editor </h3>
+          
+          <Button className="float-end mb-2" onClick={() => {
                 const updatedCourse = { ...course, _id: uuidv4(), image: "images/reactjs.jpg" }
                 setCourse(updatedCourse)
                 addNewCourse()
-                enrollCourse(currentUser, updatedCourse);
               }}>Add New Course</Button>
 
             <Button variant="success" className="float-end me-2"
@@ -124,10 +150,11 @@ export default function Dashboard() {
               Update Course
             </Button>
           
-          
           <br />
+
           <FormControl onChange={(e) => setCourse({ ...course, name: e.target.value })}
             value={course.name}
+            className="mb-2"
           />
           <FormControl onChange={(e) => setCourse({ ...course, description: e.target.value })}
             value={course.description}
@@ -145,44 +172,47 @@ export default function Dashboard() {
           {courses.map((course: any) => (
               <Col className="wd-dashboard-course" style={{ width: "300px" }} key={course._id}>
                 <Card>
-                  <Link className="wd-dashboard-course-link text-decoration-none text-dark"
-                        to={`/Kambaz/Courses/${course._id}/Home`}
-                        >
-                    <Card.Img variant="top" src={course.image} width="100%" height={160} />
+                  <Link className="wd-dashboard-course-link text-decoration-none text-dark" 
+                  to={`/Kambaz/Courses/${course._id}/Home`}
+                  >
+                    <Card.Img variant="top" src={course.image} width="100%" height={160} /><br />
+                    
                     <Card.Body>
-                      <Card.Title className="wd-dashboard-course-title text-nowrap overflow-hidden">{course.name}</Card.Title>
-                      <Card.Text  className="wd-dashboard-course-description overflow-hidden"
-                              style={{height: "100px"}}
-                      >{course.description}</Card.Text>
-                      <Button variant="primary">Go</Button>
-
+                      <Card.Title className="wd-dashboard-course-title text-nowrap overflow-hidden">
+                        {course.name} </Card.Title>
+                      <Card.Text className="wd-dashboard-course-description overflow-hidden" style={{ height: "100px" }}>
+                        {course.description} </Card.Text>
+                      <Button variant="primary" className="me-2"> Go </Button>
+                      
                       {currentUser.role === "FACULTY" && <>
                           <Button variant="danger" onClick={(e) => {
                             e.preventDefault();
                             deleteCourse(course._id);
-                          }} 
-                            className="float-end">
+                          }} className="float-end">
                             Delete
                           </Button>
-                          <Button onClick={(e) => {
+                          <Button
+                            onClick={(e) => {
                               e.preventDefault();
                               setCourse(course)
-                            }} variant="warning" className="float-end me-2">Edit</Button>
-                            
+                            }}
+                            variant="warning"
+                            className="me-2 float-end">
+                            Edit
+                          </Button>
                         </>}
 
-                      {currentUser.role !== "FACULTY" && (
-                        enrollments.some((enrollment: any) => enrollment.user === currentUser._id && enrollment.course === course._id) ?
-                          <Button variant="danger" className="me-2 float-end"
-                            onClick={(e) => {
+                      {currentUser.role !== "FACULTY" && currentUser.role !== "ADMIN" && showAll && (
+                        course.enrolled ?
+                          <Button variant="danger" className="me-2 float-end" onClick={(e) => {
                             e.preventDefault();
-                            unenrollCourse(currentUser, course);
+                            unenrollFromCourse(currentUser, course);
                           }}>Unenroll</Button>
                           :
                           <Button variant="success" className="me-2 float-end"
-                            onClick={(e) => {
+                          onClick={(e) => {
                             e.preventDefault();
-                            enrollCourse(currentUser, course);
+                            enrollInCourse(currentUser, course);
                           }}>Enroll</Button>
                       )}
                     </Card.Body>

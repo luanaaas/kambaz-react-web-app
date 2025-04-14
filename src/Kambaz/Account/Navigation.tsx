@@ -5,6 +5,8 @@ import { useSelector } from "react-redux";
 export default function AccountNavigation() {
     const { currentUser } = useSelector((state: any) => state.accountReducer);
     const { pathname } = useLocation();
+    const active = (path: string) => (pathname.includes(path) ? "active" : "");
+
     const links = currentUser
         ? [{ label: "Profile", path: "/Kambaz/Account/Profile" }]
         : [
@@ -19,23 +21,12 @@ export default function AccountNavigation() {
                     id={`wd-account-${link.label}`}
                     className={`fs-5 d-block mb-2 ps-1 me-3 ${pathname.includes(link.label) ? "active wd-black-text" : "text-danger"}`}> {link.label} </Link>
             ))}
+
+            {currentUser && currentUser.role === "ADMIN" && (
+       <Link to={`/Kambaz/Account/Users`} className={`list-group-item ${active("Users")}`}> Users </Link> )}
+
+            
+
         </div>
     );
 }
-//     return (
-//         <ListGroup id="wd-account-navigation" className="wd list-group fs-5 rounded-0">
-//             {!currentUser && (<>
-//             <ListGroup.Item as={Link} to="/Kambaz/Account/Signin"
-//                 className="list-group-item active border border-0" >Signin</ListGroup.Item>
-//             <br />
-//             <ListGroup.Item as={Link} to="/Kambaz/Account/Signup"
-//                 className="list-group-item text-danger border border-0">Signup</ListGroup.Item>
-//             <br />
-//             </>)}
-//             {currentUser && <ListGroup.Item as={Link} to="/Kambaz/Account/Profile"
-//                 className="list-group-item text-danger border border-0">Profile</ListGroup.Item>}
-//         </ListGroup>
-//     );
-
-    
-// }
